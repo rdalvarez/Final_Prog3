@@ -163,7 +163,7 @@ function FrmModificar(obj){ //solo modifico el alta con jquery :)
 	CargarForm();
 	setTimeout(function(){  // incluyo delay - form tarda mas 
 		$('#nombre').val(obj.nombre);
-		$('#precio').val(obj.precio);
+		$('#raza').val(obj.raza);
 		$('#tipo').val(obj.tipo);
 
 		$('#agregar').text("Modificar");

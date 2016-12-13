@@ -99,8 +99,7 @@ switch ($_POST['queHago']) {
 
 		//VARIABLE ENTRADA
 		$mascota = array('Nombre' => $nombre, 'Raza' => $raza, 'Tipo' => $tipo);
-
-		var_dump($mascota);
+		
 		//INVOCO AL METODO DE MI WS		
 		$result = $client->call('AltaMascota', array('Mascota' => $mascota));
 
