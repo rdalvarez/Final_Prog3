@@ -24,7 +24,9 @@ class Mascota
 	public function ToString(){
 		return $this->id." - ".$this->nombre." - ".$this->raza." - ".$this->tipo."\n\r";
 	}
-
+	public static function ToString2($id,$nombre,$raza,$tipo){
+		return $id." - ".$nombre." - ".$raza." - ".$tipo."\n\r";
+	}
 	//METODOS STATICOS
 	public static function ObtenerUltimoId(){
 		$a = fopen("BD/Mascotas.txt", "r");
@@ -44,7 +46,7 @@ class Mascota
 			$arr = explode(" - ", fgets($a));
 
 			if (count($arr) > 1) {
-				if ($arr[0] == $id) {
+				if (trim($arr[0]) == $id) {
 					$objAuto->nombre = $arr[1];
 					$objAuto->raza = $arr[2];
 					$objAuto->tipo = trim($arr[3]);
@@ -86,8 +88,44 @@ class Mascota
 		fclose($a);
 		return $arrMascotas;
 	}
-	public function ModificarMascota($obj){
-		$arrMascotasLeidos = Mascota::TraerTodosLasMascotas();
+	public static function ModificarMascota($arr){
+
+		$resultado = TRUE;
+
+		$arrMascotasLeidos = Mascota::TraerTodasLasMascotas();
+
+		$ListaDeMascotas = array();
+		
+		for($i=0; $i<count($arrMascotasLeidos); $i++){
+			if($arrMascotasLeidos[$i]['id'] == $arr['id']){//encontre el modificado lo modifico todo menos el indice
+				$ListaDeMascotas[$i]['id'] = $arr['id'];
+				$ListaDeMascotas[$i]['nombre'] = $arr['nombre'];
+				$ListaDeMascotas[$i]['raza'] = $arr['raza'];
+				$ListaDeMascotas[$i]['tipo'] = $arr['tipo'];
+				continue;
+			}
+			$ListaDeMascotas[$i] = $arrMascotasLeidos[$i];
+		}
+		
+		//ABRO EL ARCHIVO
+		$ar = fopen("BD/Mascotas.txt", "w");
+		
+		//ESCRIBO EN EL ARCHIVO
+		foreach($ListaDeMascotas AS $item){
+			$cant = fwrite($ar, Mascota::ToString2($item['id'],$item['nombre'],$item['raza'],$item['tipo']));
+			
+			if($cant < 1)
+			{
+				$resultado = FALSE;
+				break;
+			}
+		}
+		
+		//CIERRO EL ARCHIVO
+		fclose($ar);
+		
+		return $resultado;
+
 	}
 
 }

@@ -21,16 +21,9 @@
 										  'Tipo' => array('name' => 'Tipo', 'type' => 'xsd:string')
 										 )
 								);
-//PARAMETROS DE SALIDA DE TIPOS COMPLEJOS								
-	$server->wsdl->addComplexType(
-									'Retorno',
-									'complexType',
-									'struct',
-									'all',
-									'',
-									array('Mensaje' => array('name' => 'Mensaje', 'type' => 'xsd:string')
-										 )
-								);
+
+
+
 ///**********************************************************************************************************///								
 //REGISTRO METODO CON PARAMETRO DE ENTRADA COMPLEJO Y PARAMETRO DE SALIDA 'SIMPLE'
 	$server->register('AltaMascota',                	
@@ -56,17 +49,19 @@
 						array('Mascota' => 'tns:Mascota'),  
 						array('return' => 'xsd:string'),   
 						'urn:wsMascota',                		
-						'urn:wsMascota#SaludarPersona',             
+						'urn:wsMascota#ModificaMascota',             
 						'rpc',                        		
 						'encoded',                    		
-						'Intertar un Mascota'    			
+						'Modificar una Mascota'    			
 					);
 
 
 	function ModificarMascota($p) {
-		$material = new Mascota($p['Nombre'], $p['Precio'],$p['Tipo']);
 
-		return $material->InsertarMascota();
+		$aux = explode(" - ", $p['Nombre']);
+		$arrMaterial = array($aux[0],$aux[1], $p['Precio'],$p['Tipo']);
+
+		return Mascota::ModificarMascota($arrMaterial);
 	}
 ///**********************************************************************************************************///
 

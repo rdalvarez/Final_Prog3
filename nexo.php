@@ -99,7 +99,7 @@ switch ($_POST['queHago']) {
 
 		//VARIABLE ENTRADA
 		$mascota = array('Nombre' => $nombre, 'Raza' => $raza, 'Tipo' => $tipo);
-		
+
 		//INVOCO AL METODO DE MI WS		
 		$result = $client->call('AltaMascota', array('Mascota' => $mascota));
 
@@ -124,21 +124,22 @@ switch ($_POST['queHago']) {
 		break;
 
 	case "MODIFICAR":
+
 		require_once 'clases/mascota.php';
 		
 		//VALIDACION-------------------------------------------------//
 
-		if (!isset($_POST['material']['nombre']) && !isset($_POST['material']['raza'])) {
+		if (!isset($_POST['mascota']['id']) && !isset($_POST['mascota']['raza'])) {
 				$respuesta['mensaje'] = "Se necesitan todos los campos.";
 				echo json_encode($respuesta);
 				return;
 			}
+		$id = $_POST['mascota']['id'];
+		$nombre = $id." - ".$_POST['mascota']['nombre'];
+		$raza = $_POST['mascota']['raza'];
+		$tipo = $_POST['mascota']['tipo'];
 
-		$nombre = $_POST['material']['nombre'];
-		$raza = $_POST['material']['raza'];
-		$tipo = $_POST['material']['tipo'];
-
-		//var_dump($nombre); var_dump($raza); var_dump($tipo);
+		//var_dump($id); var_dump($nombre); var_dump($raza); var_dump($tipo);
 
 		if ($nombre == "" && $raza == "") {
 			$respuesta['mensaje'] = "Se necesitan todos los campos.";
@@ -166,10 +167,10 @@ switch ($_POST['queHago']) {
 		}
 
 		//VARIABLE ENTRADA
-		$material = array('Nombre' => $nombre, 'Raza' => $raza, 'Tipo' => $tipo);
+		$mascota = array('Nombre' => $nombre, 'Raza' => $raza, 'Tipo' => $tipo);
 
 		//INVOCO AL METODO DE MI WS		
-		$result = $client->call('ModificarMaterial', array('Material' => $material));
+		$result = $client->call('ModificarMascota', array('Mascota' => $mascota));
 
 		if ($client->fault) {
 			echo '<h2>ERROR AL INVOCAR METODO:</h2><pre>';
@@ -187,6 +188,44 @@ switch ($_POST['queHago']) {
 		}
 		
 		//-----------------------------------------------------------//
+
+		echo json_encode($respuesta);
+		break;
+
+	case "ELIMINAR":
+		require_once 'clases/mascota.php';
+		require_once('lib/nusoap.php');
+
+		$id = $_POST['mascota']['id'];
+
+		$host = 'http://localhost:8080/php/web_service.php';
+
+		$client = new nusoap_client($host . '?wsdl');
+
+		$err = $client->getError();
+		if ($err) {
+			echo '<h2>ERROR EN LA CONSTRUCCION DEL WS:</h2><pre>' . $err . '</pre>';
+			die();
+		}
+
+//INVOCO AL METODO DE MI WS		
+		$arrMascotas = $client->call('EliminarMascota', array('Id' => $id));
+
+		if ($client->fault) {
+			echo '<h2>ERROR AL INVOCAR METODO:</h2><pre>';
+			print_r($arrMascotas);
+			echo '</pre>';
+		} else {
+			$err = $client->getError();
+			if ($err) {
+				echo '<h2>ERROR EN EL CLIENTE:</h2><pre>' . $err . '</pre>';
+			} 
+			else {
+				// echo '<h2>Resultado</h2>';
+				// echo '<pre>' . var_dump($arrMascotas) . '</pre>';
+				// echo '<br/>';
+			}
+		}	
 
 		echo json_encode($respuesta);
 		break;

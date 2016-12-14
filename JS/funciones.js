@@ -146,6 +146,7 @@ function NuevaMascota(){
 
 			if (!respuesta.exito) {
 				alert("ERROR: " + respuesta.mensaje);
+				console.log("ERROR: " + respuesta.mensaje);
 				return;
 			}
 			alert("BIEN: "+respuesta.mensaje);
@@ -166,26 +167,27 @@ function FrmModificar(obj){ //solo modifico el alta con jquery :)
 		$('#raza').val(obj.raza);
 		$('#tipo').val(obj.tipo);
 
-		$('#agregar').text("Modificar");
-		$("#agregar").attr("onclick","Modificar()");
+		$("#agregar").text("Modificar");
+		$("#agregar").removeAttr("onclick");
+		$("#agregar").attr("onclick","Modificar("+obj.id+")");
 		$("#titulo").text("Modificación");;
-	}, 5);
+	}, 50);
 
 }
-function Modificar(){
+function Modificar(id){
 	var nombre = $('#nombre').val();
-	var precio = $('#precio').val();
+	var raza = $('#raza').val();
 	var tipo = $('#tipo').val();
 
 	var pagina = "nexo.php";
-	var material = {nombre: nombre, precio: precio, tipo: tipo};
+	var mascota = {id: id, nombre: nombre, raza: raza, tipo: tipo};
 	var queHago = "MODIFICAR";
 
 	$.ajax({
 		type: "POST",
 		url: pagina,
 		data: {
-			material: material, 
+			mascota: mascota, 
 			queHago: queHago
 		},
 		dataType: "json",
@@ -195,9 +197,8 @@ function Modificar(){
 		function bien(respuesta){
 
 			if (!respuesta.exito) {
-				alert("ERROR: " + respuesta.mensaje);					
-				$("#nombre").val("");
-				$("#precio").val("");
+				alert("ERROR: " + respuesta.mensaje);
+				console.log("ERROR: " + respuesta.mensaje);
 				return;
 			}
 			alert("BIEN: "+respuesta.mensaje);
@@ -211,5 +212,37 @@ function Modificar(){
 	);
 }
 function Eliminar(obj){
-	
+	var id = obj.id;
+
+	var pagina = "nexo.php";
+	var mascota = {id: id};
+	var queHago = "ELIMINAR";
+
+	$.ajax({
+		type: "POST",
+		url: pagina,
+		data: {
+			mascota: mascota, 
+			queHago: queHago
+		},
+		dataType: "json",
+		async: true
+	})
+	.then( 
+		function bien(respuesta){
+
+			if (!respuesta.exito) {
+				alert("ERROR: " + respuesta.mensaje);
+				console.log("ERROR: " + respuesta.mensaje);
+				return;
+			}
+			alert("BIEN: "+respuesta.mensaje);
+			$("#divAbm").html("");
+			Grilla();
+		}
+		,
+		function mal(jqXHR, textStatus, errorThrown) {
+        	console.log("ERROR:\n"+jqXHR.responseText + "\n" + textStatus + "\n" + errorThrown);
+		}
+	);
 }
